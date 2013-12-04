@@ -2,6 +2,8 @@
 wii-minecraft
 ------------------------------------
 Control Minecraft using Wii accessories (balance board and wiimote/nunchuck) on  a Raspberry Pi with bluetooth. Currently uses the Minecraft API, but may switch to xvkbd. Forked from i-Racer Controllers.
+Requires the very excellent cwiid, available from:
+https://github.com/geoffsalmon/cwiid
 
 
 i-Racer Controllers
