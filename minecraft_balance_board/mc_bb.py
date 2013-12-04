@@ -15,52 +15,65 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Simple code to control Arexx Dagu i-racer using Raspberry Pi and Wii Balance Board
+"""Simple code to control Minecraft using Raspberry Pi and Wii Balance Board
 
 Usage:
-  $ python iracer_balance_board.py
+
+Copy this file into  ~/mcpi/api/python/
+
+  $ python mc_bb.py
 
 """
 
 __author__ = 'cwjoneill@gmail.com (Conor O\'Neill)'
+__modified__ = 'tng@chegwin.org (Tim Gibbon)'
 
 import cwiid
 import sys
-import bluetooth
+#import bluetooth
 import time
 import math
+import mcpi.minecraft as minecraft
+mc = minecraft.Minecraft.create()
 
-global sock
+global wiimote_board
 global wiimote
+
+def myPos():
+    return mc.player.getTilePos()
+
+def moveRelative(xinc,zinc):
+    x,y,z = myPos()
+    y = mc.getHeight(x+xinc,z+zinc)
+    mc.player.setTilePos(x+xinc,y,z+zinc)
+
+
  
 def main():
 
 
     print 'Press Red Sync Button in Battery Compartment of Balance Board...'
-
     # Wii Balance Board
-    rpt_mode = 0
-
+    rpt_mode_board = 0
 	# Change the number below to the Bluetooth MAC address of your Wii Balance Board
     # You get that by pressing red sync button in battery compartment and then running
     # hcitool scan	
-    wiimote = cwiid.Wiimote("00:1E:35:C0:E3:FD")
+    wiimote_board = cwiid.Wiimote("00:24:44:E9:71:45")
+    rpt_mode_board ^= cwiid.RPT_EXT
+    wiimote_board.rpt_mode = rpt_mode_board
 
-    rpt_mode ^= cwiid.RPT_EXT
-    wiimote.rpt_mode = rpt_mode
-
-
-    # i-racer 
-	# Change the number below to the Bluetooth MAC address of your i-racer
-    # You get that by turning on the i-racer and and then running
+#    print 'Press 1&2 on Wiimote...'
+    # Wiimote
+#    rpt_mode = 0
+	# Change the number below to the Bluetooth MAC address of your Wii Balance Board
+    # You get that by pressing red sync button in battery compartment and then running
     # hcitool scan	
-    bd_addr = "00:12:05:09:95:33"
-    port = 1
-    sock = bluetooth.BluetoothSocket( bluetooth.RFCOMM )
-    sock.connect((bd_addr, port))
+#    wiimote = cwiid.Wiimote("00:24:F3:85:F7:B1")
+#    rpt_mode ^= cwiid.RPT_EXT
+#    wiimote.rpt_mode = rpt_mode
 
     # Probably a good idea to have recently calibrated your Balance Board on your Wii
-    balance_calibration = wiimote.get_balance_cal()
+    balance_calibration = wiimote_board.get_balance_cal()
     # print balance_calibration
     right_top_cal = balance_calibration[0][0]
     right_bottom_cal = balance_calibration[1][0]
@@ -69,16 +82,16 @@ def main():
 
     while True:
 	    # Quite a slow refresh rate. Feel free to reduce this time (it's in seconds)
-        time.sleep(0.5)
-        wiimote.request_status()
+        time.sleep(0.1)
+        wiimote_board.request_status()
 
-        right_top = wiimote.state['balance']['right_top'] - right_top_cal
-        right_bottom =  wiimote.state['balance']['right_bottom'] - right_bottom_cal
-        left_top =  wiimote.state['balance']['left_top'] - left_top_cal
-        left_bottom = wiimote.state['balance']['left_bottom'] - left_bottom_cal
+        right_top = wiimote_board.state['balance']['right_top'] - right_top_cal
+        right_bottom =  wiimote_board.state['balance']['right_bottom'] - right_bottom_cal
+        left_top =  wiimote_board.state['balance']['left_top'] - left_top_cal
+        left_bottom = wiimote_board.state['balance']['left_bottom'] - left_bottom_cal
 
-        LEFT_RIGHT_MULTIPLIER = 1.2
-        FRONT_BACK_MULTIPLIER = 1.2
+        LEFT_RIGHT_MULTIPLIER = 1.4
+        FRONT_BACK_MULTIPLIER = 2
 
         lean = "Indeterminate"
         
@@ -128,29 +141,35 @@ def main():
         #       'left_top=%s left_bottom=%s') % \
         #      (right_top, right_bottom, left_top, left_bottom)
         if ((right_bottom != 0) and (right_top != 0) and (left_bottom != 0) and (left_top != 0)):
-            print ('RT/RB = %.2f LT/LB = %.2f RT/LT = %.2f RB/LB = %.2f') % \
+#            print ('RT/RB = %.2f LT/LB = %.2f RT/LT = %.2f RB/LB = %.2f') % \
                   (abs(right_top/float(right_bottom)), abs(left_top/float(left_bottom)), abs(right_top/float(left_top)), abs(right_bottom/float(left_bottom))) 	  
 
         if (lean == "Left Top"):
         #    # 0x5X for left forward. 0x51 very slow. 0x5F fastest
-            sock.send('\x5A')
+#            print "Left Top"
+            moveRelative(1,1)
         if (lean == "Right Top"):
         #    # 0x6X for right forward. 0x11 very slow. 0x1F fastest
-            sock.send('\x6A')
+#            print "Right Top"
+            moveRelative(-1,1)
         if (lean == "Middle Top"):
         #    # 0x1X for straight forward. 0x11 very slow. 0x1F fastest
-            sock.send('\x1A')
+#            print "Middle Top"
+            moveRelative(0,1)
         if (lean == "Left Bottom"):
         #    # 0x7X for left backwards. 0x71 very slow. 0x7F fastest
-            sock.send('\x7A')
+#            print "Left Bottom"
+            moveRelative(1,-1)
         if (lean == "Right Bottom"):
         #    # 0x8X for right backwards. 0x81 very slow. 0x8F fastest
-            sock.send('\x8A')
+#            print "Right Bottom"
+            moveRelative(-1,-1)
         if (lean == "Middle Bottom"):
         #    # 0x2X for straight backward. 0x21 very slow. 0x2F fastest
-            sock.send('\x2A')
+#            print "Middle Bottom"
+            moveRelative(0,-1)
         if (lean == "Stop"):
         #    #stop
-            sock.send('\x00')
+            print "Stop"
 
 main()

@@ -1,3 +1,9 @@
+
+wii-minecraft
+------------------------------------
+Control Minecraft using Wii accessories (balance board and wiimote/nunchuck) on  a Raspberry Pi with bluetooth. Currently uses the Minecraft API, but may switch to xvkbd. Forked from i-Racer Controllers.
+
+
 i-Racer Controllers
 ------------------------------------
 Various snippets of code to control the Arexx Dagu i-racer over Bluetooth using Arduino and Raspberry Pi. 
