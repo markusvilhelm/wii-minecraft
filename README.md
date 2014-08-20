@@ -1,38 +1,11 @@
 
 wii-minecraft
 ------------------------------------
-Control Minecraft using Wii accessories (balance board and wiimote/nunchuck) on  a Raspberry Pi with bluetooth. Currently uses the Minecraft API, but may switch to xvkbd. Forked from i-Racer Controllers.
-Requires the very excellent cwiid, available from:
-https://github.com/geoffsalmon/cwiid
+
+Since 3.11 kernel, Wii devices have been moved into the kernel, so cwiid is unnecessary. Can just use the Balance board as a joystick device, following standard blueman configuration. Code and updated instructions moved into main minecraft repository:
+
+https://github.com/tommybobbins/minecraft_flashcards/tree/master/scripts/wii_balance_board
+
+https://github.com/tommybobbins/minecraft_flashcards/tree/master/scripts/wii_balance_board/README.md
 
 
-i-Racer Controllers
-------------------------------------
-Various snippets of code to control the Arexx Dagu i-racer over Bluetooth using Arduino and Raspberry Pi. 
-
-Description
------------
-This code enables you to use either an Arduino or Raspberry Pi to control an i-racer over Bluetooth with different input devices. So far we've used a MakeyMakey, Wii Nunchuck and Wii Balance Board, with more coming over time.
-
-Pre-Requisites
---------------
-See each sub-directory for detailed README
-
-Changelog
-=========
-
-2013/01/03
-----------
-First rough version of MakeMakey Raspberry Pi code. Not very responsive but more controllable than the Android App.
-
-2013/03/05
-----------
-Added Nunchuck+Arduino code
-
-2013/05/06
-----------
-Added Wii Balance Board + Raspberry Pi code
-
-2013/12/04
-----------
-Forked and Modified for Minecraft API
